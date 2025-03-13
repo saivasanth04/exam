@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ticket Booking System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .form-container {
+            margin-bottom: 20px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .ticket-list {
+            margin-top: 20px;
+        }
+        .ticket-item {
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+        }
+        input, select {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        button {
+            padding: 8px 16px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <h1>Ticket Booking System</h1>
+    
+    <div class="form-container">
+        <h2>Book a Ticket</h2>
+        <form id="ticketForm">
+            <label for="name">Name:</label>
+            <input type="text" id="name" required>
+            
+            <label for="from">From:</label>
+            <input type="text" id="from" required>
+            
+            <label for="to">To:</label>
+            <input type="text" id="to" required>
+            
+            <label for="date">Date:</label>
+            <input type="date" id="date" required>
+            
+            <button type="submit">Book Ticket</button>
+        </form>
+    </div>
+
+    <div class="ticket-list">
+        <h2>Booked Tickets</h2>
+        <div id="ticketsContainer"></div>
+    </div>
+
+    <script>
+        // Local storage key for tickets
+        const STORAGE_KEY = 'bookedTickets';
+
+        // Load tickets from local storage
+        function loadTickets() {
+            const tickets = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+            return tickets;
+        }
+
+        // Save tickets to local storage
+        function saveTickets(tickets) {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(tickets));
+        }
+
+        // Display tickets
+        function displayTickets() {
+            const tickets = loadTickets();
+            const container = document.getElementById('ticketsContainer');
+            container.innerHTML = tickets.map((ticket, index) => `
+                <div class="ticket-item">
+                    <h3>${ticket.name}</h3>
+                    <p>From: ${ticket.from}</p>
+                    <p>To: ${ticket.to}</p>
+                    <p>Date: ${ticket.date}</p>
+                    <button onclick="cancelTicket(${index})">Cancel</button>
+                </div>
+            `).join('');
+        }
+
+        // Book a new ticket
+        document.getElementById('ticketForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const ticket = {
+                name: document.getElementById('name').value,
+                from: document.getElementById('from').value,
+                to: document.getElementById('to').value,
+                date: document.getElementById('date').value
+            };
+
+            const tickets = loadTickets();
+            tickets.push(ticket);
+            saveTickets(tickets);
+            displayTickets();
+            document.getElementById('ticketForm').reset();
+        });
+
+        // Cancel a ticket
+        function cancelTicket(index) {
+            const tickets = loadTickets();
+            tickets.splice(index, 1);
+            saveTickets(tickets);
+            displayTickets();
+        }
+
+        // Initial display of tickets
+        displayTickets();
+    </script>
+</body>
+</html>
